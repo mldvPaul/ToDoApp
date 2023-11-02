@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {AiOutlinePlus} from 'react-icons/ai'
 import Todo from './components/Todo';
+import {db} from './firebase'
+import {query, collection, onSnapshot} from 'firebase/firestore'
 
 const style = {
   bg: `h-screen w-screen p-4 bg-gradient-to-r from-[#2F80ED] to-[#1CB5E0]`,
@@ -14,7 +16,26 @@ const style = {
 
 function App() {
 
-  const [todos, setTodos] = useState(['Learn React', 'Learn Tailwind'])
+  const [todos, setTodos] = useState([])
+
+// Create todo
+// Read todo from firebase
+
+useEffect(() => {
+  const q = query(collection(db, 'todos'))
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    let todosArr = []
+    querySnapshot.forEach((doc) => {
+      todosArr.push({...doc.data(), id: doc.id})
+    });
+    setTodos(todosArr)
+  })
+  return () => unsubscribe()
+},[])
+// Update todo in firebase
+// Delete todo
+
+
 
   return (
     <div className={style.bg}>
